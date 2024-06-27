@@ -2,23 +2,12 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import json
-import pprint
-
-url = ["https://www.immoweb.be/en/classified/apartment/for-sale/lier/2500/20000906","https://www.immoweb.be/en/classified/house/for-sale/nassogne/6950/11485698","https://www.immoweb.be/en/classified/house/for-rent/ottignies-louvain-la-neuve/1340/20001129","https://www.immoweb.be/en/classified/villa/for-sale/kortrijk/8510/20000379"]
-# text = requests.get(f"{url[2]}",headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'})
-# soup = BeautifulSoup(text.text,features="html.parser")
-
-# for tag in soup.find_all(type="text/javascript"):
-#     if "window.classified" in str(tag.string):
-#         dico = tag.string.strip()
-#         dico = re.findall(r"\{.*\}", str(dico))
-#         rdico = json.loads(dico[0])
-
-# j = json.dumps(rdico, indent=4)
-# with open("house.json", "w") as file:
-#     print(j, file=file)
+import pandas as pd
 
 class Classified():
+    """
+    Representation of a proprety, based on a immoweb url
+    """
 
     def __init__(self,house_url : str) -> None:
         self.locality = None
@@ -56,6 +45,9 @@ class Classified():
                 ndict = tag.string.strip()
                 ndict = re.findall(r"\{.*\}", str(ndict))
                 return json.loads(ndict[0])
+        # j = json.dumps(ndict, indent=4)
+        # with open("house.json", "w") as file:
+        #     print(j, file=file)
 
     def _type(self,c_type : str) -> int:
         '''Sets the type to a numerical value
@@ -102,14 +94,17 @@ class Classified():
         self.terrace_area = self.infos["property"]["terraceSurface"]
         self.garden = self._bool_num(self.infos["property"]["hasGarden"])
         self.garden_area = self.infos["property"]["gardenSurface"]
-        self.plot_surface = self.infos["property"]["land"]["surface"]
+        self.plot_surface = self.infos["property"]["land"]["surface"] if self.infos["property"]["land"] != None else None
         self.facades = self.infos["property"]["building"]["facadeCount"]
         self.pool = self._bool_num(self.infos["property"]["hasSwimmingPool"])
         self.state = self.infos["property"]["building"]["condition"]
 
-    def to_df(self):
-        pass
-
-house = Classified(url[1])
-house.infos = None
-pprint.pprint(vars(house))
+    def to_df(self,df : pd.DataFrame):
+        """Translate attributes of the object into a pandas dataframe"""
+        series = vars(self)
+        series.pop("infos")
+        if len(df.index) == 0:
+            df = pd.DataFrame([series])
+        else:
+            df.loc[len(df.index)] = series
+        return df
