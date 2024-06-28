@@ -29,7 +29,7 @@ class Classified():
         self.pool = None
         self.state = None
         self.infos = self.get_dict(house_url)
-        self._set_infos()
+        self._set_infos(False)
 
     def get_dict(self,url:str) -> dict:
         """
@@ -40,14 +40,12 @@ class Classified():
         
         text = requests.get(f"{url}",headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'})
         soup = BeautifulSoup(text.text,features="html.parser")
+        
         for tag in soup.find_all(type="text/javascript"):
             if "window.classified" in str(tag.string):
                 ndict = tag.string.strip()
                 ndict = re.findall(r"\{.*\}", str(ndict))
                 return json.loads(ndict[0])
-        # j = json.dumps(ndict, indent=4)
-        # with open("house.json", "w") as file:
-        #     print(j, file=file)
 
     def _type(self,c_type : str) -> int:
         '''Sets the type to a numerical value
@@ -79,15 +77,19 @@ class Classified():
         elif value == False:
             return 0
 
-    def _set_infos(self) -> None:
+    def _set_infos(self, fprint:bool = False) -> None:
+        if fprint == True:
+            j = json.dumps(self.infos, indent=4)
+            with open("house.json", "w") as file:
+                print(j, file=file)
         self.locality = self.infos["property"]["location"]["postalCode"]
         self.type = self._type(self.infos["property"]["type"])
         self.subtype = self.infos["property"]["subtype"]
         self.price = self.infos["price"]["mainValue"]
         self.sale_type = self._sale_type(self.infos["transaction"]["type"])
-        self.rooms = int(self.infos["property"]["bedroomCount"])
-        self.living_area = int(self.infos["property"]["netHabitableSurface"])
-        self.equipped_kitchen = self._kitchen(self.infos["property"]["kitchen"]["type"])
+        self.rooms = (self.infos["property"]["bedroomCount"])
+        self.living_area = int(self.infos["property"]["netHabitableSurface"]) if self.infos["property"]["netHabitableSurface"] != None else None
+        self.equipped_kitchen = self._kitchen(self.infos["property"]["kitchen"]["type"]) if self.infos["property"]["kitchen"] != None else None
         self.furnished = self._bool_num(self.infos["transaction"]["sale"]["isFurnished"]) if self.sale_type == 1 else self._bool_num(self.infos["transaction"]["rental"]["isFurnished"])
         self.fire = self._bool_num(self.infos["property"]["fireplaceExists"])
         self.terrace = self._bool_num(self.infos["property"]["hasTerrace"])
@@ -95,9 +97,9 @@ class Classified():
         self.garden = self._bool_num(self.infos["property"]["hasGarden"])
         self.garden_area = self.infos["property"]["gardenSurface"]
         self.plot_surface = self.infos["property"]["land"]["surface"] if self.infos["property"]["land"] != None else None
-        self.facades = self.infos["property"]["building"]["facadeCount"]
+        self.facades = self.infos["property"]["building"]["facadeCount"] if self.infos["property"]["building"] != None else None
         self.pool = self._bool_num(self.infos["property"]["hasSwimmingPool"])
-        self.state = self.infos["property"]["building"]["condition"]
+        self.state = self.infos["property"]["building"]["condition"] if self.infos["property"]["building"] != None else None
 
     def to_df(self,df : pd.DataFrame):
         """Translate attributes of the object into a pandas dataframe"""
