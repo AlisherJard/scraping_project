@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class Urls:
     def __init__(self):
@@ -24,26 +24,17 @@ class Urls:
     def scrape_multiple_pages(self, base_url, total_pages):
         '''Scrapes multiple pages and collects all the links'''
         self.urls = []
-        for page_num in range(1, total_pages + 1):
-            print(f'Scraping page {page_num}')
-            url = f"{base_url}&page={page_num}"
-            soup = self.scrape(url)
-            page_links = self.find_links(soup)
-            self.urls.extend(page_links)
+        # for page_num in range(1, total_pages + 1):
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.scrape_page_links,base_url,page_num) for page_num in range(1, total_pages + 1)]
+            for futures in as_completed(futures):
+                page_links = futures.result()
+                self.urls.extend(page_links)
         return self.urls
-
-
-buy = []
-base_url = "https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&priceType=SALE_PRICE"
-total_pages = 10
-
-
-url_scraper = Urls()
-all_links = url_scraper.scrape_multiple_pages(base_url, total_pages)
-
-buy.extend(all_links)
-
-buy_set = set(buy)
-
-print(buy_set)
-print(len(buy_set))
+    
+    def scrape_page_links(self,base_url:str,page_num:int):
+        url = f"{base_url}&page={page_num}"
+        soup = self.scrape(url)
+        page_links = self.find_links(soup)
+        print(f'Scraping page {page_num}')
+        return page_links

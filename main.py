@@ -1,10 +1,37 @@
 from scraper import Classified
+from class_urls import Urls
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 
-url = ["https://www.immoweb.be/en/classified/apartment/for-sale/lier/2500/20000906","https://www.immoweb.be/en/classified/house/for-sale/nassogne/6950/11485698","https://www.immoweb.be/en/classified/house/for-rent/ottignies-louvain-la-neuve/1340/20001129","https://www.immoweb.be/en/classified/villa/for-sale/kortrijk/8510/20000379"]
+url_scraper = Urls()
 
-test = pd.DataFrame()
-for link in url:
+def scrape_website(total_pages:int = 333):
+    base_url = "https://www.immoweb.be/en/search/house-and-apartment/"
+    combined_url = ["for-sale?countries=BE","for-rent?countries=BE"]
+    df = pd.DataFrame()
+    link_set = get_links(base_url,combined_url,total_pages)
+
+    with ThreadPoolExecutor(max_workers=40) as executor:
+        futures = [executor.submit(get_page, link, df) for link in link_set]
+        for futures in as_completed(futures):
+            house = futures.result()
+            df = house.to_df(df)
+    return df
+
+def get_links(base_url:str, combined_url:list[str], total_pages:int = 333):
+    link_set = []
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(url_scraper.scrape_multiple_pages, base_url+url_type, total_pages) for url_type in combined_url]
+        for futures in as_completed(futures):
+            links = futures.result()
+            link_set.extend(links)
+    return set(link_set)
+
+def get_page(link:str, df:pd.DataFrame):
+    print(f"Scraping page {link}")
     house = Classified(link)
-    test = house.to_df(test)
-print(test)
+    return house
+
+df = scrape_website()
+print(len(df))
+df.to_csv("dataset.csv",na_rep=None)
