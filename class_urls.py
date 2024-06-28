@@ -25,6 +25,7 @@ class Urls:
         '''Scrapes multiple pages and collects all the links'''
         self.urls = []
         for page_num in range(1, total_pages + 1):
+            print(f'Scraping page {page_num}')
             url = f"{base_url}&page={page_num}"
             soup = self.scrape(url)
             page_links = self.find_links(soup)
@@ -34,7 +35,7 @@ class Urls:
 
 buy = []
 base_url = "https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&priceType=SALE_PRICE"
-total_pages = 333
+total_pages = 10
 
 
 url_scraper = Urls()
