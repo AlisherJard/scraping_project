@@ -32,12 +32,11 @@ class Urls:
         return self.urls
 
 
-# Initialize variables
 buy = []
 base_url = "https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&priceType=SALE_PRICE"
 total_pages = 333
 
-# Scrape the links
+
 url_scraper = Urls()
 all_links = url_scraper.scrape_multiple_pages(base_url, total_pages)
 
