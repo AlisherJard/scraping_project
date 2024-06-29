@@ -29,7 +29,7 @@ class Classified():
         self.pool = None
         self.state = None
         self.infos = self.get_dict(house_url)
-        self._set_infos(True)
+        self._set_infos()
 
     def get_dict(self,url:str) -> dict:
         """

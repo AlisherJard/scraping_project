@@ -32,6 +32,6 @@ def get_page(link:str, df:pd.DataFrame):
     house = Classified(link)
     return house
 
-df = scrape_website(100)
+df = scrape_website()
 print(len(df))
 df.to_csv("dataset.csv",na_rep=None)
