@@ -29,7 +29,7 @@ class Classified():
         self.pool = None
         self.state = None
         self.infos = self.get_dict(house_url)
-        self._set_infos(False)
+        self._set_infos(True)
 
     def get_dict(self,url:str) -> dict:
         """
@@ -82,7 +82,9 @@ class Classified():
             j = json.dumps(self.infos, indent=4)
             with open("house.json", "w") as file:
                 print(j, file=file)
-        self.locality = self.infos["property"]["location"]["postalCode"]
+        if self.infos == None:
+            return
+        self.locality = self.infos["property"]["location"]["postalCode"] if "property" in self.infos else None
         self.type = self._type(self.infos["property"]["type"])
         self.subtype = self.infos["property"]["subtype"]
         self.price = self.infos["price"]["mainValue"]
@@ -100,7 +102,7 @@ class Classified():
         self.facades = self.infos["property"]["building"]["facadeCount"] if self.infos["property"]["building"] != None else None
         self.pool = self._bool_num(self.infos["property"]["hasSwimmingPool"])
         self.state = self.infos["property"]["building"]["condition"] if self.infos["property"]["building"] != None else None
-
+    
     def to_df(self,df : pd.DataFrame):
         """Translate attributes of the object into a pandas dataframe"""
         series = vars(self)

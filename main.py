@@ -11,7 +11,7 @@ def scrape_website(total_pages:int = 333):
     df = pd.DataFrame()
     link_set = get_links(base_url,combined_url,total_pages)
 
-    with ThreadPoolExecutor(max_workers=40) as executor:
+    with ThreadPoolExecutor() as executor:
         futures = [executor.submit(get_page, link, df) for link in link_set]
         for futures in as_completed(futures):
             house = futures.result()
@@ -32,6 +32,6 @@ def get_page(link:str, df:pd.DataFrame):
     house = Classified(link)
     return house
 
-df = scrape_website()
+df = scrape_website(100)
 print(len(df))
 df.to_csv("dataset.csv",na_rep=None)
