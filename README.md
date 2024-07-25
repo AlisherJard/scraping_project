@@ -66,7 +66,7 @@ Rachaal Shen
 
 - `Day 4`: Creation of main.py
 
-- `Day 5`: Revision and data scrapping
+- `Day 5`: Revision and data scraping
 
 
 
