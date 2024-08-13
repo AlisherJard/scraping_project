@@ -12,17 +12,12 @@ The dataset will be used later as a training set for building the prediction mod
 - To run this project, you need to have Python installed on your machine.
   You also need the following Python libraries:
 
-- `concurrent.futures`
-
-- `bs4`
-
-- `pandas`
-
-- `requests`
-
-- `re`
-
-- `json`
+![concurrent.futures](https://img.shields.io/badge/concurrent.futures-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Beautiful Soup](https://img.shields.io/badge/Beautiful%20Soup-4B8BBE?style=for-the-badge&logo=python&logoColor=white)
+![Pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Requests](https://img.shields.io/badge/requests-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![re](https://img.shields.io/badge/re-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![JSON](https://img.shields.io/badge/JSON-000000?style=for-the-badge&logo=json&logoColor=white)
 
 
 ### 🖥️ Data Collected
