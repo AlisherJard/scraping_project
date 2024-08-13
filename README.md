@@ -49,7 +49,7 @@ Alisher Jardemaliyev
 
 Geoffroy Panis
 
-Rachaal Shen
+Rachael Shen
 
 ## 📅 Timeline
 
