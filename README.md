@@ -53,7 +53,7 @@ Rachael Shen
 
 ## 📅 Timeline
 
-- `Day 1`: Javascript and HTML analysis
+- `Day 1`: HTML analysis
 
 - `Day 2`: Creation of URLS class
 
